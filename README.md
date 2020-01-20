@@ -1,8 +1,10 @@
-Ansible Role Consul
+<p><img src="https://www.consul.io/assets/images/og-image-6ef0ad8b.png" alt="grafana logo" title="grafana" align="right" height="60" /></p>
+
+Ansible Role :rainbow: :bar_chart: Grafana
 =========
-[![Galaxy Role](*role-shield-link*)](--role-link--)
-[![Downloads](*downloads-shield-link*)](--role-link--)
-[![Build Status](*build-shield-link*)](--role-link--)
+[![Galaxy Role](https://img.shields.io/ansible/role/45968.svg)](https://galaxy.ansible.com/0x0I/grafana)
+[![Downloads](https://img.shields.io/ansible/role/d/45968.svg)](https://galaxy.ansible.com/0x0I/grafana)
+[![Build Status](https://travis-ci.org/0x0I/ansible-role-consul.svg?branch=master)](https://travis-ci.org/0x0I/ansible-role-consul)
 
 **Table of Contents**
   - [Supported Platforms](#supported-platforms)
