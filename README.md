@@ -1,6 +1,6 @@
 <p><img src="https://www.consul.io/assets/images/og-image-6ef0ad8b.png" alt="grafana logo" title="grafana" align="right" height="60" /></p>
 
-Ansible Role :rainbow: :bar_chart: Grafana
+Ansible Role :satellite: :low_brightness: Consul
 =========
 [![Galaxy Role](https://img.shields.io/ansible/role/45968.svg)](https://galaxy.ansible.com/0x0I/grafana)
 [![Downloads](https://img.shields.io/ansible/role/d/45968.svg)](https://galaxy.ansible.com/0x0I/grafana)
