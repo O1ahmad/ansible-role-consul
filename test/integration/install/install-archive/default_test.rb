@@ -12,5 +12,15 @@ describe directory('/opt/consul') do
   it { should exist }
   its('owner') { should eq 'consul' }
   its('group') { should eq 'consul' }
-  its('mode') { should cmp '0755' }
+end
+
+describe file('/opt/consul/consul') do
+  it { should exist }
+  its('owner') { should eq 'consul' }
+  its('group') { should eq 'consul' }
+  its('mode') { should cmp '0775' }
+end
+
+describe command('/opt/consul/consul -h') do
+  its('exit_status') { should eq 0 }
 end
