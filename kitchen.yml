@@ -91,7 +91,13 @@ platforms:
 suites:
   - name: install-archive
     provisioner:
-      playbook: test/integration/install/install-archive/default_playbook.yml
+      playbook: test/integration/install/install_archive/default_playbook.yml
     verifier:
       inspec_tests:
-        - path: test/integration/install/install-archive
+        - path: test/integration/install/install_archive
+  - name: install-source
+    provisioner:
+      playbook: test/integration/install/install_source/default_playbook.yml
+    verifier:
+      inspec_tests:
+        - path: test/integration/install/install_source

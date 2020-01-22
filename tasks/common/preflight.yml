@@ -13,19 +13,76 @@
   package:
     name: unzip
     state: present
-  when: archive_url | basename | regex_search('(zip$)', ignorecase=True)
+  when: install_type == 'archive' and archive_url | basename | regex_search('(zip$)', ignorecase=True)
 
 - name: Set extra archive extraction arguments if tar type
   set_fact:
     archive_options:
       - --strip-components
       - '1'
-  when: not archive_url | basename | regex_search('(zip$)', ignorecase=True)
+  when: install_type == 'archive' and not archive_url | basename | regex_search('(zip$)', ignorecase=True)
+
+- name: Update system packages
+  become: true
+  yum:
+    name: "*"
+    state: latest
+  when: install_type == 'source' and ansible_os_family|lower == "redhat"
+  tags:
+    - preflight
+
+- name: Add Go-lang backports repository to sources list
+  become: true
+  apt_repository:
+    repo: ppa:longsleep/golang-backports
+  when: install_type == 'source' and ansible_distribution|lower == "ubuntu"
+  tags:
+    - preflight
+
+- name: Update apt packages
+  become: true
+  apt:
+    upgrade: 'yes'
+    update_cache: 'yes'
+  when: install_type == 'source' and ansible_os_family|lower == "debian"
+  tags:
+    - preflight
+
+- name: Download and extract Go-lang
+  become: true
+  unarchive:
+    src: "{{ go_url }}"
+    dest: "{{ go_install_dir }}"
+    mode: '0775'
+    remote_src: 'yes'
+  when: install_type == 'source' and ansible_distribution|lower != "ubuntu"
+  tags:
+    - preflight
+
+- name: Update system dependencies
+  become: true
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ system_dependencies }}"
+  when: install_type == 'source'
+  tags:
+    - preflight
+
+- name: Create a symbolic link to {{ exe_dir }}
+  become: true
+  file:
+    src: "{{ go_exe_dir }}/go"
+    dest: "{{ exe_dir }}/go"
+    state: link
+  when: install_type == 'source' and ansible_distribution|lower != "Ubuntu"
+  tags:
+    - preflight
 
 - name: Set unit [Service] configuration
   set_fact:
     default_service_unit:
-      ExecStart: "{{ install_dir }}/consul {{ extra_run_args|join(' ') }}"
+      ExecStart: "{{ exe_dir }}/consul {{ extra_run_args|join(' ') }}"
       User: "{{ consul_user }}"
       Group: "{{ consul_user }}"
       WorkingDirectory: "{{ install_dir }}"
