@@ -1,2 +1,10 @@
 ---
-# main role installation, configuration and operation tasks
+- name: Include common preflight tasks
+  include_tasks: "common/preflight.yml"
+  tags:
+    - preflight
+
+- name: Include common install tasks
+  include_tasks: "common/install.yml"
+  tags:
+    - install

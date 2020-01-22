@@ -1,0 +1,49 @@
+---
+- name: Include OS and distribution specific variables.
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution|lower }}.yml"
+        - "{{ ansible_os_family|lower }}.yml"
+      skip: true
+  tags:
+    - preflight
+
+- name: Set extra archive extraction arguments based on type
+  package:
+    name: unzip
+    state: present
+  when: archive_url | basename | regex_search('(zip$)', ignorecase=True)
+
+- name: Set extra archive extraction arguments if tar type
+  set_fact:
+    archive_options:
+      - --strip-components
+      - '1'
+  when: not archive_url | basename | regex_search('(zip$)', ignorecase=True)
+
+- name: Set unit [Service] configuration
+  set_fact:
+    default_service_unit:
+      ExecStart: "{{ install_dir }}/consul {{ extra_run_args|join(' ') }}"
+      User: "{{ consul_user }}"
+      Group: "{{ consul_user }}"
+      WorkingDirectory: "{{ install_dir }}"
+      StandardOutput: journal
+      StandardError: inherit
+  tags:
+    - preflight
+
+- name: Check for uninstall signal
+  block:
+    - name: Broadcast uninstall signal
+      command: /bin/true
+      notify:
+        - Uninstall service
+
+    - name: End play following uninstallation
+      meta: end_play
+  when: perform_uninstall
+  ignore_errors: true
+  tags:
+    - preflight

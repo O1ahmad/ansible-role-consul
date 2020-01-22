@@ -1,2 +1,13 @@
 ---
-# defaults variable file
+consul_user: consul
+
+archive_url: https://releases.hashicorp.com/consul/1.6.2/consul_1.6.2_linux_amd64.zip
+archive_checksum: 78d127e5b8edd310c3f9f89487fb833a5c7bcb4e09cb731a4d39100fc53b38be
+checksum_format: sha256
+archive_options: []
+
+install_dir: /opt/consul
+
+extra_run_args: []
+
+perform_uninstall: false
