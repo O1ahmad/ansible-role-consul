@@ -8,10 +8,7 @@
     consul_configs:
       - name: test-example
         config:
-          datacenter: east-example
-          data_dir: /var/data/consul
           log_level: debug
-          log_file: /var/log/consul/consul.log
     extra_run_args:
       - '-dev'
     custom_unit_properties: {}
