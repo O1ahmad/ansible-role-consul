@@ -1,0 +1,50 @@
+---
+- name: Create configuration directory
+  become: true
+  file:
+    path: "{{ cfg.path | default(config_dir) }}"
+    state: directory
+    owner: "{{ consul_user }}"
+    group: "{{ consul_user }}"
+  tags:
+    - config
+
+- name: Render {{ cfg.name }} configuration file
+  become: true
+  template:
+    src: "config.json.j2"
+    dest: "{{ cfg.path | default(config_dir) }}/{{ cfg.name }}.json"
+    owner: "{{ consul_user }}"
+    group: "{{ consul_user }}"
+    mode: 0664
+    backup: true
+  vars:
+    conf: "{{ cfg.config }}"
+  tags:
+    - config
+
+- name: Create data directory if specified
+  become: true
+  file:
+    path: "{{ cfg.config.data_dir }}"
+    state: directory
+    owner: "{{ consul_user }}"
+    group: "{{ consul_user }}"
+    mode: 0755
+  when: cfg.config.data_dir is defined and cfg.config.data_dir|length > 0
+  tags:
+    - config
+    - data
+
+- name: Create log directory if specified
+  become: true
+  file:
+    path: "{{ cfg.config.log_file|dirname }}"
+    state: directory
+    owner: "{{ consul_user }}"
+    group: "{{ consul_user }}"
+    mode: 0755
+  when: cfg.config.log_file is defined and cfg.config.log_file|length > 0
+  tags:
+    - config
+    - log

@@ -27,6 +27,7 @@ provisioner:
   require_ruby_for_busser: false
   ansible_verbosity: 2
   ansible_verbose: true
+  requirements_path: test/requirements-test.yml
 
 verifier:
   name: inspec
@@ -92,12 +93,27 @@ suites:
   - name: install-archive
     provisioner:
       playbook: test/integration/install/install_archive/default_playbook.yml
+      ansible_extra_flags: '--skip-tags=config,launch'
     verifier:
       inspec_tests:
         - path: test/integration/install/install_archive
   - name: install-source
     provisioner:
       playbook: test/integration/install/install_source/default_playbook.yml
+      ansible_extra_flags: '--skip-tags=config,launch'
     verifier:
       inspec_tests:
         - path: test/integration/install/install_source
+  - name: config-service
+    provisioner:
+      playbook: test/integration/config/config_service/default_playbook.yml
+      ansible_extra_flags: '--skip-tags=launch'
+    verifier:
+      inspec_tests:
+        - path: test/integration/config/config_service
+  - name: launch-service
+    provisioner:
+      playbook: test/integration/launch/launch_service/default_playbook.yml
+    verifier:
+      inspec_tests:
+        - path: test/integration/launch/launch_service
