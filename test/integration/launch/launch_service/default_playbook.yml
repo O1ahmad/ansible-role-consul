@@ -11,9 +11,7 @@
           datacenter: east-example
           data_dir: /var/data/consul
           log_level: debug
-          log_file: /var/log/consul
-      - name: another-test-example
-        config:
-          datacenter: test-example
-    extra_run_args: []
+          log_file: /var/log/consul/consul.log
+    extra_run_args:
+      - '-dev'
     custom_unit_properties: {}

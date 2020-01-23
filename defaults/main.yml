@@ -23,6 +23,7 @@ _config_specs: []
 
 _datadir_set: false
 
+_service_name: consul
 exe_dir: /usr/local/bin
 extra_run_args: []
 
