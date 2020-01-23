@@ -17,6 +17,12 @@ archive_options: []
 
 install_dir: /opt/consul
 
+config_dir: /etc/consul
+consul_configs: []
+_config_specs: []
+
+_datadir_set: false
+
 exe_dir: /usr/local/bin
 extra_run_args: []
 
