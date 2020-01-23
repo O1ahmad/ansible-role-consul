@@ -9,7 +9,7 @@
     - config
 
 - name: Scan supplied configs for specification of data_dir
-  command: "grep -q 'data_dir' {{ item.path|default(config_dir) }}/{{ item.name }}.json"
+  command: "grep -q 'data_dir' {{ item.path|default(config_dir) }}/{{ item.name }}.{{ item.type|default('json') }}"
   register: _datadir_scans
   ignore_errors: yes
   check_mode: no

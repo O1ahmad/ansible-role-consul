@@ -1,25 +1,34 @@
 ---
+- name: Set config item properties
+  set_fact:
+    path: "{{ cfg.path | default(config_dir) }}"
+    name: "{{ cfg.name }}"
+    type: "{{ cfg.type | default('json') }}"
+    log_is_file: false
+
 - name: Create configuration directory
   become: true
   file:
-    path: "{{ cfg.path | default(config_dir) }}"
+    path: "{{ path }}"
     state: directory
     owner: "{{ consul_user }}"
     group: "{{ consul_user }}"
   tags:
     - config
 
-- name: Render {{ cfg.name }} configuration file
+- name: Render {{ name }} configuration file
   become: true
   template:
     src: "config.json.j2"
-    dest: "{{ cfg.path | default(config_dir) }}/{{ cfg.name }}.json"
+    dest: "{{ path }}/{{ name }}.{{ type }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_user }}"
     mode: 0664
     backup: true
   vars:
     conf: "{{ cfg.config }}"
+  notify:
+    - Restart service
   tags:
     - config
 
@@ -32,9 +41,16 @@
     group: "{{ consul_user }}"
     mode: 0755
   when: cfg.config.data_dir is defined and cfg.config.data_dir|length > 0
+  notify:
+    - Restart service
   tags:
     - config
     - data
+
+- name: Check type (file or directory) of log_file parameters
+  set_fact:
+    log_is_file: true
+  when: 'cfg.config.log_file is defined and ".log" in cfg.config.log_file'
 
 - name: Create log directory if specified
   become: true
@@ -43,8 +59,27 @@
     state: directory
     owner: "{{ consul_user }}"
     group: "{{ consul_user }}"
-    mode: 0755
-  when: cfg.config.log_file is defined and cfg.config.log_file|length > 0
+  when: not log_is_file and (cfg.config.log_file is defined and cfg.config.log_file|length > 0)
+  tags:
+    - config
+    - log
+
+- name: Create log file (and parent directory) if specified
+  become: true
+  block:
+    - name: Ensure creation of log file parent directory
+      file:
+        path: "{{ cfg.config.log_file|dirname }}"
+        state: directory
+        owner: "{{ consul_user }}"
+        group: "{{ consul_user }}"
+    - name: Touch log file
+      file:
+        path: "{{ cfg.config.log_file }}"
+        state: touch
+        owner: "{{ consul_user }}"
+        group: "{{ consul_user }}"
+  when: log_is_file and (cfg.config.log_file is defined and cfg.config.log_file|length > 0)
   tags:
     - config
     - log
