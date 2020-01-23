@@ -21,6 +21,6 @@ describe file('/opt/consul/consul') do
   its('mode') { should cmp '0775' }
 end
 
-describe command('/opt/consul/consul -h') do
+describe command('/usr/local/bin/consul -h') do
   its('exit_status') { should eq 0 }
 end

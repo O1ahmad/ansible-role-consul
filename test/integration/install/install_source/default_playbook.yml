@@ -1,0 +1,8 @@
+---
+- name: Default playbook for testing
+  hosts: test-kitchen
+  roles:
+    - ansible-role-consul
+  vars:
+    install_type: source
+    git_version: v1.6.1
