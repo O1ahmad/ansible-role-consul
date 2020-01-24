@@ -8,7 +8,9 @@
     consul_configs:
       - name: test-example
         config:
+          server: true
           log_level: debug
+          data_dir: /var/data/consul
     extra_run_args:
       - '-dev'
     custom_unit_properties: {}

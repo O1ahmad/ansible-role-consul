@@ -17,7 +17,7 @@ archive_options: []
 
 install_dir: /opt/consul
 
-config_dir: /etc/consul
+config_dir: /etc/consul.d
 consul_configs: []
 _config_specs: []
 
@@ -25,6 +25,7 @@ _datadir_set: false
 
 _service_name: consul
 exe_dir: /usr/local/bin
+custom_unit_properties: {}
 extra_run_args: []
 
 perform_uninstall: false
