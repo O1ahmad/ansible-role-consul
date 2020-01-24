@@ -5,6 +5,7 @@
     name: "{{ _service_name }}"
     state: restarted
   listen: Restart service
+  ignore_errors: true
 
 - name: Stop Consul systemd service
   become: true
