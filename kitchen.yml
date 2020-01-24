@@ -107,7 +107,6 @@ suites:
   - name: config-service
     provisioner:
       playbook: test/integration/config/config_service/default_playbook.yml
-      ansible_extra_flags: '--skip-tags=launch'
     verifier:
       inspec_tests:
         - path: test/integration/config/config_service
