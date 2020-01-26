@@ -3,6 +3,7 @@ consul_user: consul
 
 install_type: archive
 
+go_autoinstall: false
 go_url: https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz
 go_install_dir: /usr/local
 go_exe_dir: /usr/local/go/bin
