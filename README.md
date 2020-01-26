@@ -88,11 +88,13 @@ _The following variables can be customized to control various aspects of this in
 
 #### Config
 
-Consul supports specification of multiple configuration files or definitions for controlling various aspects of an agent's behavior. These definitions are expected to be expressed in either `JSON` or `HCL` format and to adhere to the syntax framework and rules outlined in *Consul's* official docs and as determined by the community. Each of these configurations can be expressed using the `consul_configs` hash, which contains a list of various Consul agent *configuration options*, *config-entries*, *service registrations* and *check* or service healthcheck directives.
+Consul supports specification of multiple configuration files or definitions for controlling various aspects of an agent's behavior. These definitions are expected to be expressed in either `JSON` or `HCL` format and to adhere to the syntax framework and rules outlined in *Consul's* official docs and as determined by the community.
 
-These hashes contain a list of structures specific to each configuration type for declaring the desired agent settings to be rendered in addition to common amongst them all, `:name, :path and :config` which specify the name and path of the configuration file to render and a hash of the configuration to set. See [here](https://www.consul.io/docs/agent/config_entries.html) for more details as well as a list of supported options for each configuration type.
+Each of these configurations can be expressed using the `consul_configs` hash, which contains a list of various Consul agent *configuration options*, *config-entries*, *service registrations* and *check* or service healthcheck directives.
 
-The following provides a reference for a more in-depth explanation in addition to examples of each.
+These hashes contain a list of structures specific to each configuration type for declaring the desired agent settings to be rendered in addition to common amongst them all, `:name, :path and :config` which specify the name and path of the configuration file to render and a hash of the configuration to set.
+
+See [here](https://www.consul.io/docs/agent/config_entries.html) for more details as well as a list of supported options for each configuration type and reference the following for a more in-depth explanation in addition to examples of each.
 
 `[consul_configs: <entry>:] name: <string>` (**default**: *required*)
 - name of the configuration file to render on the target host (excluding the file extension)
@@ -193,17 +195,34 @@ Service Defaults, one of the five config entry objects supported by Consul, cont
 
 #### Launch
 
+This role supports launching either a `consul` client or server agent utilizing the [systemd](https://www.freedesktop.org/wiki/Software/systemd/) service management tool, which manages the service as a background process or daemon subject to the configuration and execution potential provided by its underlying management framework.
+
+_The following variables can be customized to manage the service's **systemd** [Service] unit definition and execution profile/policy:_
+
+`extra_run_args: <prometheus-cli-options>` (**default**: `[]`)
+- list of `consul` commandline arguments to pass to the binary at runtime for customizing launch.
+
+Supporting full expression of `consul`'s [cli](https://www.consul.io/docs/agent/options.html#command-line-options), this variable enables the launch to be customized according to the user's specification.
+
+`custom_unit_properties: <hash-of-systemd-service-settings>` (**default**: `[]`)
+- hash of settings used to customize the `[Service]` unit configuration and execution environment of the *Consul* **systemd** service.
+
 `go_exe_dir: </path/to/exe/dir>` (**default**: `<platform_dependent>`)
-- path on target host where the `go` binaries should be extracted to.
+- path on target host where `go` binaries should be extracted to when `go_autoinstall` is enabled.
 
 #### Uninstall
 
-...*description of uninstallation related vars*...
+Support for uninstalling and removing artifacts necessary for provisioning allows for users/operators to return a target host to its configured state prior to application of this role. This can be useful for recycling nodes and roles and perhaps providing more graceful/managed transitions between tooling upgrades.
+
+_The following variable(s) can be customized to manage this uninstall process:_
+
+`perform_uninstall: <true | false>` (**default**: `false`)
+- whether to uninstall and remove all artifacts and remnants of this `consul` installation on a target host (**see**: `handlers/main.yml` for details)
 
 Dependencies
 ------------
 
-...*list dependencies*...
+- 0x0i.systemd
 
 Example Playbook
 ----------------
@@ -211,7 +230,7 @@ default example:
 ```
 - hosts: all
   roles:
-  - role: 0xOI.<role>
+  - role: 0xOI.consul
 ```
 
 License
