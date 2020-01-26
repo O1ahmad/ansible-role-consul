@@ -44,7 +44,7 @@
   yum:
     name: "*"
     state: latest
-  when: install_type == 'source' and ansible_os_family|lower == "redhat"
+  when: go_autoinstall and install_type == 'source' and ansible_os_family|lower == "redhat"
   tags:
     - preflight
 
@@ -52,7 +52,7 @@
   become: true
   apt_repository:
     repo: ppa:longsleep/golang-backports
-  when: install_type == 'source' and ansible_distribution|lower == "ubuntu"
+  when: go_autoinstall and install_type == 'source' and ansible_distribution|lower == "ubuntu"
   tags:
     - preflight
 
@@ -61,7 +61,7 @@
   apt:
     upgrade: 'yes'
     update_cache: 'yes'
-  when: install_type == 'source' and ansible_os_family|lower == "debian"
+  when: go_autoinstall and install_type == 'source' and ansible_os_family|lower == "debian"
   tags:
     - preflight
 
@@ -72,7 +72,7 @@
     dest: "{{ go_install_dir }}"
     mode: '0775'
     remote_src: 'yes'
-  when: install_type == 'source' and ansible_distribution|lower != "ubuntu"
+  when: go_autoinstall and install_type == 'source' and ansible_distribution|lower != "ubuntu"
   tags:
     - preflight
 
@@ -82,7 +82,7 @@
     name: "{{ item }}"
     state: present
   loop: "{{ system_dependencies }}"
-  when: install_type == 'source'
+  when: go_autoinstall and install_type == 'source'
   tags:
     - preflight
 
@@ -92,6 +92,6 @@
     src: "{{ go_exe_dir }}/go"
     dest: "{{ exe_dir }}/go"
     state: link
-  when: install_type == 'source' and ansible_distribution|lower != "Ubuntu"
+  when: go_autoinstall and install_type == 'source' and ansible_distribution|lower != "Ubuntu"
   tags:
     - preflight
