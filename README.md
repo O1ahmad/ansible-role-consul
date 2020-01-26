@@ -105,7 +105,7 @@ See [here](https://www.consul.io/docs/agent/config_entries.html) for more detail
 `[consul_configs: <entry>:] path: </path/to/config>` (**default**: */etc/consul.d*)
 - path of the configuration file to render on the target host
 
-  **Note:** When loading configuration, Consul loads the configuration from files and directories in lexical order. Configuration specified later will be merged into configuration specified earlier. In general, "merge" results in the later version overriding the earlier. In some cases, such as event handlers, merging appends the handlers to the existing configuration.
+  **Note:** When loading configuration, Consul loads the configuration from files and directories in lexical order. Configuration specified later will be merged into configuration specified earlier. In general, "merge" results in the later version override the earlier. In some cases, such as event handlers, merging appends the handlers to the existing configuration.
 
 `[consul_config: <entry>:] config: <JSON>` (**default**: )
 - specifies parameters that manage various aspects of a consul agent's operations
@@ -206,7 +206,7 @@ Service router config entries are restricted to only services that define their 
 See [here](https://www.consul.io/docs/agent/config-entries/service-router.html) for more details regarding available configuration settings and suggested usage.
 
 `[consul_config: <entry>: config: config_entries : bootstrap:] <JSON list entry>` (**default**: [])
-- specifies parameters that manage service router settings for a particular group of services 
+- specifies parameters that manage router settings for a particular group of services 
 
 ##### Example
 
@@ -271,7 +271,7 @@ If no resolver config is defined the chain assumes 100% of traffic goes to the h
 See [here](https://www.consul.io/docs/agent/config-entries/service-resolver.html) for more details regarding available configuration settings and suggested usage.
 
 `[consul_config: <entry>: config: config_entries : bootstrap:] <JSON list entry>` (**default**: [])
-- specifies parameters that manage splitting of service traffic across various flows
+- specifies parameters that manage which service instances should satisfy Connect upstream discovery requests for a given service name
 
 ##### Example
 
