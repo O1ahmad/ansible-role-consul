@@ -63,7 +63,7 @@ _The following variables can be customized to control various aspects of this in
 - address of a compressed **tar or zip** archive containing `consul` binaries. This method technically supports installation of any available version of `consul`. Links to official versions can be found [here](https://releases.hashicorp.com/consul/).
 
 `archive_checksum: <path-or-url-to-checksum>` (**default**: see `defaults/main.yml`)
-- address of a checksum file for verifying the data integrity of the specified archive. While recommended and generally considered a best practice, specifying a checksum is *not required* and can be disabled by providing an empty string (`''`) for its value.
+- address of a checksum file or actual checksum for verifying the data integrity of the specified archive. While recommended and generally considered a best practice, specifying a checksum is *not required* and can be disabled by providing an empty string (`''`) for its value.
 
 `checksum_format: <string>` (**default**: see `sha512`)
 - hash algorithm used for file verification associated with the specified archive or package checksum. Reference [here](https://en.wikipedia.org/wiki/Cryptographic_hash_function) for more information about *checksums/cryptographic* hashes.
@@ -88,7 +88,96 @@ _The following variables can be customized to control various aspects of this in
 
 #### Config
 
-...*description of configuration related vars*...
+Consul supports specification of multiple configuration files or definitions for controlling various aspects of an agent's behavior. These definitions are expected to be expressed in either `JSON` or `HCL` format and to adhere to the syntax framework and rules outlined in *Consul's* official docs and as determined by the community. Each of these configurations can be expressed using the `consul_configs` hash, which contains a list of various Consul agent *configuration options*, *config-entries*, *service registrations* and *check* or service healthcheck directives.
+
+These hashes contain a list of structures specific to each configuration type for declaring the desired agent settings to be rendered in addition to common amongst them all, `:name, :path and :config` which specify the name and path of the configuration file to render and a hash of the configuration to set. See [here](https://www.consul.io/docs/agent/config_entries.html) for more details as well as a list of supported options for each configuration type.
+
+The following provides a reference for a more in-depth explanation in addition to examples of each.
+
+`[consul_config: <entry>:] name: <string>` (**default**: *required*)
+- name of the configuration file to render on the target host (excluding the file extension)
+
+`[consul_config: <entry>:] type: <json|hcl>` (**default**: *json*)
+- type or format of the configuration file to render. Configuration can be either in JSON or [HCL](https://github.com/hashicorp/hcl#syntax) format.
+
+`[consul_config: <entry>:] path: </path/to/config>` (**default**: */etc/consul.d*)
+- path of the configuration file to render on the target host
+
+  **Note:** When loading configuration, Consul loads the configuration from files and directories in lexical order. Configuration specified later will be merged into configuration specified earlier. In general, "merge" results in the later version overriding the earlier. In some cases, such as event handlers, merging appends the handlers to the existing configuration.
+
+`[consul_config: <entry>:] config: <JSON>` (**default**: )
+- specifies parameters that manage various aspects of a consul agent's operations
+
+[Reference here](https://www.consul.io/docs/agent/options.html) for a list of supported configuration options.
+
+##### Example
+
+ ```yaml
+  consul_config:
+    - name: example-config
+      path: /example/path
+      config:
+        data_dir: /var/lib/consul
+        log_level: debug
+  ```
+  
+##### Service Definitions
+
+Each key-value pair represents configuration options that can also be specified via the command-line or via configuration files.
+
+##### Example
+
+ ```yaml
+  grafana_config:
+    # section [paths]
+    paths:
+      # section option 1 - path of sqlite database
+      data: /mnt/data/grafana
+      # section option 2 - path to store logs
+      logs: /mnt/logs/grafana
+  ```
+
+`grafana_datasources: <list-of-dicts>` (**default**: [])
+- specifies grafana datasource definitions to render. See [here](https://grafana.com/grafana/plugins?orderBy=weight&direction=asc) for a reference to available datasources from the community and their respective options.
+
+`grafana_datasources: name: <string>` (**default**: *required*)
+- name of grafana datasource file to render
+
+`grafana_datasources: <entry> : datasources: <list-of-dicts>` (**default**: `[]`)
+- list of data source definitions (based on supported list mentioned above) to render within the configuration file
+
+`grafana_datasources: <entry> : deleteDatasources: <list-of-dicts>` (**default**: `[]`)
+- list of previously imported data source definitions to delete (based on supported list mentioned above) to render within the configuration file
+
+##### Example
+
+ ```yaml
+  grafana_datasources:
+  - name: example_datasource
+    datasources:
+      - name: elasticsearch-logs
+        type: elasticsearch
+        access: proxy
+        database: "[logs-]YYYY.MM.DD"
+        url: http://localhost:9200
+        jsonData:
+          interval: Daily
+          timeField: "@timestamp"
+          esVersion: 70
+          logMessageField: message
+          logLevelField: fields.level
+      - name: prometheus_example
+        type: prometheus
+        access: proxy
+        url: http://localhost:9090
+    deleteDatasources:
+      - name: graphite-legacy
+        type: graphite
+        access: proxy
+        url: http://localhost:8080
+        jsonData:
+          graphiteVersion: "1.1"
+  ```
 
 #### Launch
 
