@@ -90,7 +90,11 @@ _The following variables can be customized to control various aspects of this in
 
 Consul supports specification of multiple configuration files or definitions for controlling various aspects of an agent's behavior. These definitions are expected to be expressed in either `JSON` or `HCL` format and to adhere to the syntax framework and rules outlined in *Consul's* official docs and as determined by the community.
 
-Each of these configurations can be expressed using the `consul_configs` hash, which contains a list of various Consul agent *configuration options*, *config-entries*, *service registrations* and *check* or service healthcheck directives.
+Each of these configurations can be expressed using the `consul_configs` hash, which contains a list of various Consul agent configuration options:
+* agent settings
+* config entries (e.g. service-defaults, service-routers, service-splitters)
+* service registrations
+* check or service healthcheck directives
 
 These hashes contain a list of structures specific to each configuration type for declaring the desired agent settings to be rendered in addition to common amongst them all, `:name, :path and :config` which specify the name and path of the configuration file to render and a hash of the configuration to set.
 
@@ -331,6 +335,79 @@ default example:
   roles:
   - role: 0xOI.consul
 ```
+
+install specific release version of archive containing pre-compiled binaries:
+```
+- hosts: consul-agents
+  roles:
+  - role: 0xOI.consul
+    vars:
+      archive_url: https://releases.hashicorp.com/consul/1.5.0/consul_1.5.0_linux_amd64.zip
+      archive_checksum: 1399064050019db05d3378f757e058ec4426a917dd2d240336b51532065880b6
+```
+
+build and install target version from Git source:
+```
+- hosts: consul-agents
+  roles:
+  - role: 0xOI.consul
+    vars:
+      git_version: v1.7.0-beta3
+      go_autoinstall: true
+```
+
+enable enable server role and customize data storage directory:
+```
+- hosts: consul-servers
+  roles:
+  - role: 0xOI.consul
+    vars:
+      consul_configs:
+        - name: server-cfg
+          config:
+            server: true
+            data_dir: /mnt/data/consul
+```
+
+enable debug logging for troubleshooting:
+```
+- hosts: consul-canary
+  roles:
+  - role: 0xOI.consul
+    vars:
+      consul_configs:
+        - name: consul-canary-cfg
+          config:
+            log_level: debug
+            enable_debug: true
+            log_file: /var/log/consul
+            log_rotate_bytes: 1000000000
+```
+
+register consul clients within Consul service catalog 
+ ```yaml
+- hosts: consul-clients
+  roles:
+  - role: 0xOI.consul
+    vars:
+    consul_configs:
+      - name: consul-agent
+        # type: json
+        # path: /etc/consul.d
+        config:
+          node_name: host1.consul.agent
+          server: false
+          ui: true
+          service:
+            id: host1.consul-agent.domain.net
+            name: consul
+            tags: ['prod']
+            port: 8500
+            enable_tag_override: false
+            checks:
+              - args: ["/usr/local/bin/check_consul.py"],
+                interval: 10s
+  ```
 
 License
 -------
