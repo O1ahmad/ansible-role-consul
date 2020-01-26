@@ -94,13 +94,13 @@ These hashes contain a list of structures specific to each configuration type fo
 
 The following provides a reference for a more in-depth explanation in addition to examples of each.
 
-`[consul_config: <entry>:] name: <string>` (**default**: *required*)
+`[consul_configs: <entry>:] name: <string>` (**default**: *required*)
 - name of the configuration file to render on the target host (excluding the file extension)
 
-`[consul_config: <entry>:] type: <json|hcl>` (**default**: *json*)
+`[consul_configs: <entry>:] type: <json|hcl>` (**default**: *json*)
 - type or format of the configuration file to render. Configuration can be either in JSON or [HCL](https://github.com/hashicorp/hcl#syntax) format.
 
-`[consul_config: <entry>:] path: </path/to/config>` (**default**: */etc/consul.d*)
+`[consul_configs: <entry>:] path: </path/to/config>` (**default**: */etc/consul.d*)
 - path of the configuration file to render on the target host
 
   **Note:** When loading configuration, Consul loads the configuration from files and directories in lexical order. Configuration specified later will be merged into configuration specified earlier. In general, "merge" results in the later version overriding the earlier. In some cases, such as event handlers, merging appends the handlers to the existing configuration.
@@ -113,7 +113,7 @@ The following provides a reference for a more in-depth explanation in addition t
 ##### Example
 
  ```yaml
-  consul_config:
+  consul_configs:
     - name: example-config
       path: /example/path
       config:
@@ -123,60 +123,72 @@ The following provides a reference for a more in-depth explanation in addition t
   
 ##### Service Definitions
 
-Each key-value pair represents configuration options that can also be specified via the command-line or via configuration files.
+Agents provide a simple service definition format to declare the availability of a service and to potentially associate it with a health check. Each service definition must include a name and may optionally provide an *id, tags, address, meta, port, enable_tag_override, and check*. See [here](https://www.consul.io/docs/agent/services.html) for more details regarding these optional arguments and suggestions on their usage.
+
+`[consul_config: <entry>: config: service:] <JSON>` (**default**: )
+- specifies parameters that manage Consul service registration
 
 ##### Example
 
  ```yaml
-  grafana_config:
-    # section [paths]
-    paths:
-      # section option 1 - path of sqlite database
-      data: /mnt/data/grafana
-      # section option 2 - path to store logs
-      logs: /mnt/logs/grafana
+  consul_configs:
+    - name: example-service
+      # type: json
+      # path: /etc/consul.d
+      config:
+        service:
+          id: redis
+          name: redis
+          tags: ['prod']
+          port: 8000
+          enable_tag_override: false
+          checks:
+            - args: ["/usr/local/bin/check_redis.py"],
+              interval: 10s
   ```
+  
+##### Config Entries
 
-`grafana_datasources: <list-of-dicts>` (**default**: [])
-- specifies grafana datasource definitions to render. See [here](https://grafana.com/grafana/plugins?orderBy=weight&direction=asc) for a reference to available datasources from the community and their respective options.
+Configuration entries can be created to provide cluster-wide defaults for various aspects of Consul. Every configuration entry has at least two fields: Kind and Name. Those two fields are used to uniquely identify a configuration entry. When put into configuration files, configuration entries can be specified as HCL or JSON objects using either snake_case or CamelCase for key names.
 
-`grafana_datasources: name: <string>` (**default**: *required*)
-- name of grafana datasource file to render
+###### Service Defaults
 
-`grafana_datasources: <entry> : datasources: <list-of-dicts>` (**default**: `[]`)
-- list of data source definitions (based on supported list mentioned above) to render within the configuration file
+Service Defaults, one of the five config entry objects supported by Consul, control default global values for a service, such as its protocol, MeshGateway topology settings, list of paths to expose through Envoy and ACLs or access-control-lists. Specification of these options are expected to be defined within the `config : config_entries : bootstrap` hash list. See [here](https://www.consul.io/docs/agent/config-entries/service-defaults.html) for more details regarding available configuration settings and suggested usage.
 
-`grafana_datasources: <entry> : deleteDatasources: <list-of-dicts>` (**default**: `[]`)
-- list of previously imported data source definitions to delete (based on supported list mentioned above) to render within the configuration file
+`[consul_config: <entry>: config: config_entries : bootstrap:] <JSON list entry>` (**default**: [])
+- specifies parameters that manage default settings for a particular service group 
 
 ##### Example
 
  ```yaml
-  grafana_datasources:
-  - name: example_datasource
-    datasources:
-      - name: elasticsearch-logs
-        type: elasticsearch
-        access: proxy
-        database: "[logs-]YYYY.MM.DD"
-        url: http://localhost:9200
-        jsonData:
-          interval: Daily
-          timeField: "@timestamp"
-          esVersion: 70
-          logMessageField: message
-          logLevelField: fields.level
-      - name: prometheus_example
-        type: prometheus
-        access: proxy
-        url: http://localhost:9090
-    deleteDatasources:
-      - name: graphite-legacy
-        type: graphite
-        access: proxy
-        url: http://localhost:8080
-        jsonData:
-          graphiteVersion: "1.1"
+  consul_configs:
+    - name: example-api-defaults
+      config:
+        config_entries:
+          bootstrap:
+            - Kind: service-defaults
+              Name: example-api
+              Protocol: http
+  ```
+  
+###### Proxy Defaults
+
+Service Defaults, one of the five config entry objects supported by Consul, control default global values for a service, such as its protocol, MeshGateway topology settings, list of paths to expose through Envoy and ACLs or access-control-lists. Specification of these options are expected to be defined within the `config : config_entries : bootstrap` hash list. See [here](https://www.consul.io/docs/agent/config-entries/service-defaults.html) for more details regarding available configuration settings and suggested usage.
+
+`[consul_config: <entry>: config: config_entries : bootstrap:] <JSON list entry>` (**default**: [])
+- specifies parameters that manage default settings for a particular service group 
+
+##### Example
+
+ ```yaml
+  consul_configs:
+    - name: example-api-defaults
+      config:
+        config_entries:
+          bootstrap:
+            - Kind: service-defaults
+              Name: example-api
+              Protocol: http
   ```
 
 #### Launch
