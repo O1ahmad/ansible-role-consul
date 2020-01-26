@@ -234,6 +234,64 @@ See [here](https://www.consul.io/docs/agent/config-entries/service-router.html) 
                     service_subset: canary
   ```
 
+###### Service Splitter
+
+The service-splitter config entry kind controls how to split incoming Connect requests across different subsets of a single service (like during staged canary rollouts), or perhaps across different services (like during a v2 rewrite or other type of codebase migration).
+
+If no splitter config is defined for a service it is assumed 100% of traffic flows to a service with the same name and discovery continues on to the resolution stage.
+
+See [here](https://www.consul.io/docs/agent/config-entries/service-splitter.html) for more details regarding available configuration settings and suggested usage.
+
+`[consul_config: <entry>: config: config_entries : bootstrap:] <JSON list entry>` (**default**: [])
+- specifies parameters that manage splitting of service traffic across various flows
+
+##### Example
+
+ ```yaml
+  consul_configs:
+    - name: example-service-splitter
+      config:
+        config_entries:
+          bootstrap:
+            - Kind: service-splitter
+              Name: example-api
+              splits:
+                - weight: 90
+                  service_subset: "v1"
+                - weight: 10
+                  service_subset: "v2"
+  ```
+  
+###### Service Resolver
+
+The service-resolver config entry kind controls which service instances should satisfy Connect upstream discovery requests for a given service name.
+
+If no resolver config is defined the chain assumes 100% of traffic goes to the healthy instances of the default service in the current datacenter+namespace and discovery terminates.
+
+See [here](https://www.consul.io/docs/agent/config-entries/service-resolver.html) for more details regarding available configuration settings and suggested usage.
+
+`[consul_config: <entry>: config: config_entries : bootstrap:] <JSON list entry>` (**default**: [])
+- specifies parameters that manage splitting of service traffic across various flows
+
+##### Example
+
+ ```yaml
+  consul_configs:
+    - name: test-service-resolver
+        path: /mnt/etc/consul.d
+        config:
+          config_entries:
+            bootstrap:
+              - Kind: service-resolver
+                Name: example-api
+                default_subset: v1
+                subsets:
+                  v1:
+                    filter: "Service.Meta.version == v1"
+                  v2:
+                    filter: "Service.Meta.version == v2"
+  ```
+  
 #### Launch
 
 This role supports launching either a `consul` client or server agent utilizing the [systemd](https://www.freedesktop.org/wiki/Software/systemd/) service management tool, which manages the service as a background process or daemon subject to the configuration and execution potential provided by its underlying management framework.
