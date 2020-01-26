@@ -134,7 +134,7 @@ Agents provide a simple service definition format to declare the availability of
 
  ```yaml
   consul_configs:
-    - name: example-service
+    - name: example-service-definition
       # type: json
       # path: /etc/consul.d
       config:
@@ -151,7 +151,7 @@ Agents provide a simple service definition format to declare the availability of
   
 ##### Config Entries
 
-Configuration entries can be created to provide cluster-wide defaults for various aspects of Consul. Every configuration entry has at least two fields: Kind and Name. Those two fields are used to uniquely identify a configuration entry. When put into configuration files, configuration entries can be specified as HCL or JSON objects using either snake_case or CamelCase for key names.
+Configuration entries can be created to provide cluster-wide defaults for various aspects of Consul. Every configuration entry has at least two fields: **Kind** and **Name**. Those two fields are used to uniquely identify a configuration entry. When put into configuration files, configuration entries can be specified as *HCL or JSON objects* using either snake_case or CamelCase for key names.
 
 ###### Service Defaults
 
@@ -164,7 +164,7 @@ Service Defaults, one of the five config entry objects supported by Consul, cont
 
  ```yaml
   consul_configs:
-    - name: example-api-defaults
+    - name: example-service-defaults
       config:
         config_entries:
           bootstrap:
@@ -175,22 +175,63 @@ Service Defaults, one of the five config entry objects supported by Consul, cont
   
 ###### Proxy Defaults
 
-Service Defaults, one of the five config entry objects supported by Consul, control default global values for a service, such as its protocol, MeshGateway topology settings, list of paths to expose through Envoy and ACLs or access-control-lists. Specification of these options are expected to be defined within the `config : config_entries : bootstrap` hash list. See [here](https://www.consul.io/docs/agent/config-entries/service-defaults.html) for more details regarding available configuration settings and suggested usage.
+Allowing for setting global proxy defaults across all services for Connect proxy configuration, *proxy defaults* express arbitrary values which depend on and determine the behavior of the specific Connect proxy being employed. Like *Service Defaults*, specification of these options are expected to be defined within the `config : config_entries : bootstrap` hash list.
+
+See [here](https://www.consul.io/docs/agent/config-entries/proxy-defaults.html) for more details regarding available Connect proxies, configuration settings and suggested usage.
 
 `[consul_config: <entry>: config: config_entries : bootstrap:] <JSON list entry>` (**default**: [])
-- specifies parameters that manage default settings for a particular service group 
+- specifies parameters that manage default proxy settings for the global Consul namespace 
 
 ##### Example
 
  ```yaml
   consul_configs:
-    - name: example-api-defaults
+    - name: example-proxy-defaults
       config:
         config_entries:
           bootstrap:
-            - Kind: service-defaults
+            - Kind: proxy-defaults
+              Name: global
+              config:
+                local_connect_timeout_ms: 1000
+                handshake_timeout_ms: 1000
+  ```
+  
+###### Service Router
+
+The service-router config entry kind controls Consul/Connect traffic routing and manipulation at networking layer 7 (e.g. HTTP). If a router is not explicitly configured or is configured with no routes then the system behaves as if a router were configured sending all traffic to a service of the same name.
+
+Service router config entries are restricted to only services that define their protocol as http-based via a corresponding service-defaults config entry or globally via proxy-defaults. Like *Service Defaults*, specification of these options are expected to be defined within the `config : config_entries : bootstrap` hash list.
+
+See [here](https://www.consul.io/docs/agent/config-entries/service-router.html) for more details regarding available configuration settings and suggested usage.
+
+`[consul_config: <entry>: config: config_entries : bootstrap:] <JSON list entry>` (**default**: [])
+- specifies parameters that manage service router settings for a particular group of services 
+
+##### Example
+
+ ```yaml
+  consul_configs:
+    - name: example-proxy-defaults
+      config:
+        config_entries:
+          bootstrap:
+            - Kind: service-router
               Name: example-api
-              Protocol: http
+              routes:
+                - match:
+                    http:
+                      path_prefix: /admin
+                  destination:
+                    service: admin
+                - match:
+                    http:
+                      header:
+                        - name: x-debug
+                          exact: 1
+                  destination:
+                    service: web
+                    service_subset: canary
   ```
 
 #### Launch
