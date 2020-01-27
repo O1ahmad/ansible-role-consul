@@ -5,6 +5,7 @@ Ansible Role :satellite: :low_brightness: Consul
 [![Galaxy Role](https://img.shields.io/ansible/role/45968.svg)](https://galaxy.ansible.com/0x0I/grafana)
 [![Downloads](https://img.shields.io/ansible/role/d/45968.svg)](https://galaxy.ansible.com/0x0I/grafana)
 [![Build Status](https://travis-ci.org/0x0I/ansible-role-consul.svg?branch=master)](https://travis-ci.org/0x0I/ansible-role-consul)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Table of Contents**
   - [Supported Platforms](#supported-platforms)
@@ -412,7 +413,7 @@ register consul clients within Consul service catalog
 License
 -------
 
-Apache, BSD, MIT
+MIT
 
 Author Information
 ------------------
