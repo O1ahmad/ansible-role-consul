@@ -10,6 +10,7 @@
     - preflight
 
 - name: Check for uninstall signal
+  when: perform_uninstall
   block:
     - name: Broadcast uninstall signal
       command: /bin/true
@@ -21,77 +22,74 @@
   always:
     - name: End play following uninstallation
       meta: end_play
-  when: perform_uninstall
-  ignore_errors: true
   tags:
     - preflight
 
 - name: Set extra archive extraction arguments based on type
+  when: install_type == 'archive' and archive_url | basename | regex_search('(zip$)', ignorecase=True)
   package:
     name: unzip
     state: present
-  when: install_type == 'archive' and archive_url | basename | regex_search('(zip$)', ignorecase=True)
 
 - name: Set extra archive extraction arguments if tar type
+  when: install_type == 'archive' and not archive_url | basename | regex_search('(zip$)', ignorecase=True)
   set_fact:
     archive_options:
       - --strip-components
       - '1'
-  when: install_type == 'archive' and not archive_url | basename | regex_search('(zip$)', ignorecase=True)
 
 - name: Update system packages
   become: true
+  when: go_autoinstall and install_type == 'source' and ansible_os_family|lower == "redhat"
   yum:
     name: "*"
     state: latest
-  when: go_autoinstall and install_type == 'source' and ansible_os_family|lower == "redhat"
   tags:
     - preflight
 
 - name: Add Go-lang backports repository to sources list
   become: true
+  when: go_autoinstall and install_type == 'source' and ansible_distribution|lower == "ubuntu"
   apt_repository:
     repo: ppa:longsleep/golang-backports
-  when: go_autoinstall and install_type == 'source' and ansible_distribution|lower == "ubuntu"
   tags:
     - preflight
 
 - name: Update apt packages
   become: true
+  when: go_autoinstall and install_type == 'source' and ansible_os_family|lower == "debian"
   apt:
     upgrade: 'yes'
     update_cache: 'yes'
-  when: go_autoinstall and install_type == 'source' and ansible_os_family|lower == "debian"
   tags:
     - preflight
 
 - name: Download and extract Go-lang
   become: true
+  when: go_autoinstall and install_type == 'source' and ansible_distribution|lower != "ubuntu"
   unarchive:
     src: "{{ go_url }}"
     dest: "{{ go_install_dir }}"
     mode: '0775'
     remote_src: 'yes'
-  when: go_autoinstall and install_type == 'source' and ansible_distribution|lower != "ubuntu"
   tags:
     - preflight
 
 - name: Update system dependencies
   become: true
+  when: install_type == 'source'
   package:
-    name: "{{ item }}"
+    name: "{{ system_dependencies }}"
     state: present
-  loop: "{{ system_dependencies }}"
-  when: go_autoinstall and install_type == 'source'
   tags:
     - preflight
 
 - name: Create a symbolic link to {{ exe_dir }}
   become: true
+  when: go_autoinstall and install_type == 'source' and ansible_distribution|lower != "Ubuntu"
   file:
     src: "{{ go_exe_dir }}/go"
     dest: "{{ exe_dir }}/go"
     state: link
-  when: go_autoinstall and install_type == 'source' and ansible_distribution|lower != "Ubuntu"
   tags:
     - preflight

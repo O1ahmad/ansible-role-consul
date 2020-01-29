@@ -5,5 +5,5 @@
     - ansible-role-consul
   vars:
     install_type: source
-    go_autoinstall: true
     git_version: v1.6.1
+    go_autoinstall: true
