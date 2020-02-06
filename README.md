@@ -387,7 +387,7 @@ enable debug logging for troubleshooting:
 
 register consul clients within Consul service catalog 
  ```yaml
-- hosts: consul-clients
+- hosts: my-host
   roles:
   - role: 0xOI.consul
     vars:
@@ -396,13 +396,13 @@ register consul clients within Consul service catalog
         # type: json
         # path: /etc/consul.d
         config:
-          node_name: host1.consul.agent
+          node_name: my-host.consul.agent
           server: false
           ui: true
           service:
-            id: host1.consul-agent.domain.net
+            id: my-host.consul-agent.domain.net
             name: consul
-            tags: ['prod']
+            tags: ['dev']
             port: 8500
             enable_tag_override: false
             checks:
