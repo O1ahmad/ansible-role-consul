@@ -1,4 +1,4 @@
-title "Default role integrated test file"
+title "Consul service launch integration tests"
 
 describe service('consul') do
   it { should be_installed }

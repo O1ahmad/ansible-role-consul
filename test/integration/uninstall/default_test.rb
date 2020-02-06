@@ -1,4 +1,4 @@
-title "Grafana uninstall test suite"
+title "Grafana uninstallation integration tests"
 
 describe service('consul') do
   it { should_not be_installed }
