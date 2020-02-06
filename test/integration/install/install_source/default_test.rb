@@ -1,4 +1,4 @@
-title "Default role integrated test file"
+title "Consul source installation integration tests"
 
 describe user('consul') do
   it { should exist }

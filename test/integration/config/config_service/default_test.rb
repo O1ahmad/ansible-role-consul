@@ -1,4 +1,4 @@
-title "Consul configuration test suite"
+title "Consul configuration integration tests"
 
 describe directory('/etc/consul.d/') do
   it { should exist }
