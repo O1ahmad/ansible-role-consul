@@ -90,7 +90,7 @@ describe directory('/var/data/consul') do
   its('group') { should eq 'consul' }
 end
 
-describe file('/mnt/var/log/consul/consul.log') do
+describe directory('/mnt/var/log/consul') do
   it { should exist }
   its('owner') { should eq 'consul' }
   its('group') { should eq 'consul' }

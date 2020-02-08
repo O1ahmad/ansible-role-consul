@@ -34,52 +34,27 @@
 
 - name: Create data directory if specified
   become: true
+  when: cfg.config.data_dir is defined and cfg.config.data_dir|length > 0
   file:
     path: "{{ cfg.config.data_dir }}"
     state: directory
     owner: "{{ consul_user }}"
     group: "{{ consul_user }}"
     mode: 0755
-  when: cfg.config.data_dir is defined and cfg.config.data_dir|length > 0
   notify:
     - Restart service
   tags:
     - config
     - data
 
-- name: Check type (file or directory) of log_file parameters
-  set_fact:
-    log_is_file: true
-  when: 'cfg.config.log_file is defined and ".log" in cfg.config.log_file'
-
 - name: Create log directory if specified
   become: true
+  when: cfg.config.log_file is defined and cfg.config.log_file|length > 0
   file:
     path: "{{ cfg.config.log_file|dirname }}"
     state: directory
     owner: "{{ consul_user }}"
     group: "{{ consul_user }}"
-  when: not log_is_file and (cfg.config.log_file is defined and cfg.config.log_file|length > 0)
-  tags:
-    - config
-    - log
-
-- name: Create log file (and parent directory) if specified
-  become: true
-  block:
-    - name: Ensure creation of log file parent directory
-      file:
-        path: "{{ cfg.config.log_file|dirname }}"
-        state: directory
-        owner: "{{ consul_user }}"
-        group: "{{ consul_user }}"
-    - name: Touch log file
-      file:
-        path: "{{ cfg.config.log_file }}"
-        state: touch
-        owner: "{{ consul_user }}"
-        group: "{{ consul_user }}"
-  when: log_is_file and (cfg.config.log_file is defined and cfg.config.log_file|length > 0)
   tags:
     - config
     - log

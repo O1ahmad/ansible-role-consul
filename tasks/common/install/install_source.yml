@@ -1,48 +1,53 @@
 ---
 - name: Clone Consul git repository
   become: true
+  when: install_type == "source"
   git:
     repo: "{{ git_url }}"
     dest: "{{ install_dir }}"
     version: "{{ git_version }}"
-  when: install_type == "source"
+    force: true
+  changed_when: false
   tags:
     - install
     - source
 
 - name: Make tools and perform package bootstrap
   become: true
+  when: install_type == "source"
   make:
     chdir: "{{ install_dir }}"
     target: tools
   environment:
     PATH: "{{ exe_dir }}:{{ ansible_env.PATH }}"
-  when: install_type == "source"
+  changed_when: false
   tags:
     - install
     - source
 
 - name: Build source package
   become: true
+  when: install_type == "source"
   make:
     chdir: "{{ install_dir }}"
     target: dev
   environment:
     PATH: "{{ exe_dir }}:{{ ansible_env.PATH }}"
-  when: install_type == "source"
+  changed_when: false
   tags:
     - install
     - source
 
 - name: Create a symbolic link to installed binary
   become: true
+  when: install_type == "source"
   file:
     src: "{{ install_dir }}/bin/consul"
     dest: "{{ exe_dir }}/consul"
     owner: "{{ consul_user }}"
     group: "{{ consul_user }}"
     state: link
-  when: install_type == "source"
+  changed_when: false
   tags:
     - install
     - source
