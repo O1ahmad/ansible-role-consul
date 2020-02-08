@@ -39,21 +39,21 @@
 
 - name: Remove Consul data dir
   become: true
+  when: item.config.data_dir is defined
   file:
     path: "{{ item.config.data_dir }}"
     state: absent
-  listen: Uninstall service
-  when: item.config.data_dir is defined
   with_items: "{{ consul_configs }}"
+  listen: Uninstall service
 
 - name: Remove Consul log directories and files
   become: true
+  when: item.config.log_file is defined
   file:
     path: "{{ item.config.log_file|dirname }}"
     state: absent
-  listen: Uninstall service
-  when: item.config.log_file is defined
   with_items: "{{ consul_configs }}"
+  listen: Uninstall service
 
 - name: Remove Consul user
   become: true
