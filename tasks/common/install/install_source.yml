@@ -38,6 +38,18 @@
     - install
     - source
 
+- name: Ensure install directory has proper permissions
+  become: true
+  file:
+    path: "{{ install_dir }}"
+    state: directory
+    recurse: true
+    owner: "{{ consul_user }}"
+    group: "{{ consul_user }}"
+  changed_when: false
+  tags:
+    - install
+
 - name: Create a symbolic link to installed binary
   become: true
   when: install_type == "source"

@@ -16,10 +16,9 @@
       command: /bin/true
       notify:
         - Uninstall service
-  rescue:
+  always:
     - name: Ensure flush of handlers
       meta: flush_handlers
-  always:
     - name: End play following uninstallation
       meta: end_play
   tags:
@@ -37,6 +36,15 @@
     archive_options:
       - --strip-components
       - '1'
+
+- name: Ensure install of epel-release
+  become: true
+  when: install_type == 'source' and ansible_os_family|lower == "redhat"
+  package:
+    name: 'epel-release'
+    state: present
+  tags:
+    - preflight
 
 - name: Update system packages
   become: true
@@ -80,7 +88,7 @@
   become: true
   when: go_autoinstall and install_type == 'source'
   file:
-    src: "{{ go_exe_dir }}/go"
+    src: "{{ go_install_dir }}/go/bin/go"
     dest: "{{ exe_dir }}/go"
     state: link
   tags:
