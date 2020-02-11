@@ -14,6 +14,7 @@
     state: stopped
     enabled: false
   listen: Uninstall service
+  ignore_errors: true
 
 - name: Remove Consul systemd service file
   become: true
@@ -34,8 +35,8 @@
   file:
     path: "{{ item.path|default(config_dir) }}/{{ item.name }}.{{ item.type | default('json') }}"
     state: absent
-  listen: Uninstall service
   with_items: "{{ consul_configs }}"
+  listen: Uninstall service
 
 - name: Remove Consul data dir
   become: true

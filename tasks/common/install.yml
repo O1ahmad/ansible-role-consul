@@ -21,12 +21,12 @@
     - install
 
 - name: Create installation directory
+  become: true
   file:
     path: "{{ install_dir }}"
     state: directory
     owner: "{{ consul_user }}"
     group: "{{ consul_user }}"
-  become: true
   tags:
     - install
 
