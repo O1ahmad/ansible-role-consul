@@ -71,7 +71,7 @@ _The following variables can be customized to control various aspects of this in
 - hash algorithm used for file verification associated with the specified archive or package checksum. Reference [here](https://en.wikipedia.org/wiki/Cryptographic_hash_function) for more information about *checksums/cryptographic* hashes.
 
 `archive_options: <untar-or-unzip-options>` (**default**: `[]`)
-- list of additional unarchival arguments to pass to either the `tar` or `unzip` binary at runtime for customizing how the archive is extracted to the designated installation directory. See [<man tar>](https://linux.die.net/man/1/tar) and [<man unzip>](https://linux.die.net/man/1/unzip) for available options to specify, respectively.
+- list of additional unarchival arguments to pass to either the `tar` or `unzip` binary at runtime for customizing how the archive is extracted to the designated installation directory. See [man tar](https://linux.die.net/man/1/tar) and [man unzip](https://linux.die.net/man/1/unzip) for available options to specify, respectively.
 
 `git_url: <path-or-url-to-git-repo>` (**default**: see `defaults/main.yml`)
 - address of `consul` git repository. Address can reference the [Github](https://github.com/hashicorp/consul) site address or custom source hosted on an alternate git hosting site.
