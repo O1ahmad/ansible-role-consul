@@ -2,10 +2,11 @@
 
 Ansible Role :satellite: :low_brightness: Consul
 =========
-[![Galaxy Role](https://img.shields.io/ansible/role/45968.svg)](https://galaxy.ansible.com/0x0I/grafana)
-[![Downloads](https://img.shields.io/ansible/role/d/45968.svg)](https://galaxy.ansible.com/0x0I/grafana)
+[![Galaxy Role](https://img.shields.io/ansible/role/45968.svg)](https://galaxy.ansible.com/0x0I/consul)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/ansible-role-consul?color=yellow)
+[![Downloads](https://img.shields.io/ansible/role/d/45968.svg?color=lightgrey)](https://galaxy.ansible.com/0x0I/consul)
 [![Build Status](https://travis-ci.org/0x0I/ansible-role-consul.svg?branch=master)](https://travis-ci.org/0x0I/ansible-role-consul)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](https://opensource.org/licenses/MIT)
 
 **Table of Contents**
   - [Supported Platforms](#supported-platforms)
@@ -93,7 +94,7 @@ Consul supports specification of multiple configuration files or definitions for
 
 Each of these configurations can be expressed using the `consul_configs` hash, which contains a list of various Consul agent configuration options:
 * agent settings
-* config entries (e.g. service-defaults, service-routers, service-splitters)
+* config entries (e.g. *service-defaults, service-routers, service-splitters*)
 * service registrations
 * check or service healthcheck directives
 
@@ -105,12 +106,12 @@ See [here](https://www.consul.io/docs/agent/config_entries.html) for more detail
 - name of the configuration file to render on the target host (excluding the file extension)
 
 `[consul_configs: <entry>:] type: <json|hcl>` (**default**: *json*)
-- type or format of the configuration file to render. Configuration can be either in JSON or [HCL](https://github.com/hashicorp/hcl#syntax) format.
+- type or format of the configuration file to render. Configuration can be either in JSON or [HCL](https://github.com/hashicorp/hcl#syntax) format (though ONLY `json` is currently supported).
 
 `[consul_configs: <entry>:] path: </path/to/config>` (**default**: */etc/consul.d*)
 - path of the configuration file to render on the target host
 
-  **Note:** When loading configuration, Consul loads the configuration from files and directories in lexical order. Configuration specified later will be merged into configuration specified earlier. In general, "merge" results in the later version override the earlier. In some cases, such as event handlers, merging appends the handlers to the existing configuration.
+  **Note:** When loading configuration, Consul loads the configuration from files and directories in lexical order. Configuration specified later will be merged into configuration specified earlier. In general, "merge" results in the later version overriding the earlier. In some cases, such as event handlers, merging appends the handlers to the existing configuration.
 
 `[consul_config: <entry>:] config: <JSON>` (**default**: )
 - specifies parameters that manage various aspects of a consul agent's operations
@@ -303,7 +304,7 @@ This role supports launching either a `consul` client or server agent utilizing 
 
 _The following variables can be customized to manage the service's **systemd** [Service] unit definition and execution profile/policy:_
 
-`extra_run_args: <prometheus-cli-options>` (**default**: `[]`)
+`extra_run_args: <consul-cli-options>` (**default**: `[]`)
 - list of `consul` commandline arguments to pass to the binary at runtime for customizing launch.
 
 Supporting full expression of `consul`'s [cli](https://www.consul.io/docs/agent/options.html#command-line-options), this variable enables the launch to be customized according to the user's specification.
@@ -316,7 +317,7 @@ Supporting full expression of `consul`'s [cli](https://www.consul.io/docs/agent/
 
 #### Uninstall
 
-Support for uninstalling and removing artifacts necessary for provisioning allows for users/operators to return a target host to its configured state prior to application of this role. This can be useful for recycling nodes and roles and perhaps providing more graceful/managed transitions between tooling upgrades.
+Support for uninstalling and removing artifacts necessary for provisioning allows for users/operators to return a target host to its configured state prior to application of this role. This can be useful for recycling node and perhaps providing more graceful/managed transitions between tooling upgrades.
 
 _The following variable(s) can be customized to manage this uninstall process:_
 
@@ -343,6 +344,7 @@ install specific release version of archive containing pre-compiled binaries:
   roles:
   - role: 0xOI.consul
     vars:
+      install_type: archive
       archive_url: https://releases.hashicorp.com/consul/1.5.0/consul_1.5.0_linux_amd64.zip
       archive_checksum: 1399064050019db05d3378f757e058ec4426a917dd2d240336b51532065880b6
 ```
@@ -353,11 +355,12 @@ build and install target version from Git source:
   roles:
   - role: 0xOI.consul
     vars:
+      install_type: source
       git_version: v1.7.0-beta3
       go_autoinstall: true
 ```
 
-enable enable server role and customize data storage directory:
+enable server role and customize data storage directory:
 ```
 - hosts: consul-servers
   roles:
