@@ -335,14 +335,14 @@ default example:
 ```
 - hosts: all
   roles:
-  - role: 0xOI.consul
+  - role: 0x0I.consul
 ```
 
 install specific release version of archive containing pre-compiled binaries:
 ```
 - hosts: consul-agents
   roles:
-  - role: 0xOI.consul
+  - role: 0x0I.consul
     vars:
       install_type: archive
       archive_url: https://releases.hashicorp.com/consul/1.5.0/consul_1.5.0_linux_amd64.zip
@@ -353,7 +353,7 @@ build and install target version from Git source:
 ```
 - hosts: consul-agents
   roles:
-  - role: 0xOI.consul
+  - role: 0x0I.consul
     vars:
       install_type: source
       git_version: v1.7.0-beta3
@@ -364,7 +364,7 @@ enable server role and customize data storage directory:
 ```
 - hosts: consul-servers
   roles:
-  - role: 0xOI.consul
+  - role: 0x0I.consul
     vars:
       consul_configs:
         - name: server-cfg
@@ -377,7 +377,7 @@ enable debug logging for troubleshooting:
 ```
 - hosts: consul-canary
   roles:
-  - role: 0xOI.consul
+  - role: 0x0I.consul
     vars:
       consul_configs:
         - name: consul-canary-cfg
@@ -392,7 +392,7 @@ register consul clients within Consul service catalog
  ```yaml
 - hosts: my-host
   roles:
-  - role: 0xOI.consul
+  - role: 0x0I.consul
     vars:
     consul_configs:
       - name: consul-agent
