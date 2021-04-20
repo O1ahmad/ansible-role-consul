@@ -1,5 +1,5 @@
 <p><img src="https://code.benco.io/icon-collection/logos/ansible.svg" alt="ansible logo" title="ansible" align="left" height="60" /></p>
-<p><img src="https://www.consul.io/assets/images/og-image-6ef0ad8b.png" alt="grafana logo" title="grafana" align="right" height="60" /></p>
+<p><img src="https://d7umqicpi7263.cloudfront.net/img/product/4c3eb104-ebd1-42be-9bd4-de25ef6918df/fd0db979-c8f1-4fbd-b900-fb2a15e19e6b.png" alt="consul logo" title="grafana" align="right" height="60" /></p>
 
 Ansible Role :satellite: :low_brightness: Consul
 =========
