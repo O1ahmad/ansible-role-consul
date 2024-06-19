@@ -3,10 +3,8 @@
 
 Ansible Role :satellite: :low_brightness: Consul
 =========
-[![Galaxy Role](https://img.shields.io/ansible/role/45968.svg)](https://galaxy.ansible.com/0x0I/consul)
+[![Galaxy Role](https://img.shields.io/ansible/role/d/0x0i/consul)](https://galaxy.ansible.com/0x0I/consul)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/ansible-role-consul?color=yellow)
-[![Downloads](https://img.shields.io/ansible/role/d/45968.svg?color=lightgrey)](https://galaxy.ansible.com/0x0I/consul)
-[![Build Status](https://travis-ci.org/0x0I/ansible-role-consul.svg?branch=master)](https://travis-ci.org/0x0I/ansible-role-consul)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](https://opensource.org/licenses/MIT)
 
 **Table of Contents**
